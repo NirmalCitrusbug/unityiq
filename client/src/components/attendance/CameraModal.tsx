@@ -20,7 +20,6 @@ export const CameraModal: React.FC<CameraModalProps> = ({
 }) => {
   const webcamRef = useRef<Webcam>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
-  const [stream, setStream] = useState<MediaStream | null>(null);
 
   const capturePhoto = () => {
     const imageSrc = webcamRef.current?.getScreenshot();

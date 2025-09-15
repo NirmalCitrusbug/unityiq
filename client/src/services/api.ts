@@ -1,5 +1,5 @@
 import axios from "axios";
-import {getCookie, removeCookie} from "@/utils/cookies";
+import { getCookie, removeCookie } from "@/utils/cookies";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3001";
@@ -9,7 +9,6 @@ export const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true, // Important for cookies
 });
 
 // Request interceptor

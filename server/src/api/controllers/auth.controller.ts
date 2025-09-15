@@ -1,12 +1,12 @@
-import type {Request, Response} from "express";
-import {authService} from "@/api/services/auth.service";
-import {asyncHandler, sendResponse} from "@/utils";
-import {env} from "@/config";
-import {HTTP_STATUS_CODE} from "@/utils/constant";
+import type { Request, Response } from "express";
+import { authService } from "@/api/services/auth.service";
+import { asyncHandler, sendResponse } from "@/utils";
+import { env } from "@/config";
+import { HTTP_STATUS_CODE } from "@/utils/constant";
 
 export const authController = {
   login: asyncHandler(async (req: Request, res: Response) => {
-    const {pin} = req.body;
+    const { pin } = req.body;
     const result = await authService.login(pin);
 
     // Set cookies if configured to use them
@@ -14,7 +14,6 @@ export const authController = {
       res.cookie("access_token", result.tokens.accessToken, {
         httpOnly: true,
         secure: env.COOKIE_SECURE,
-        domain: env.COOKIE_DOMAIN,
         maxAge: 15 * 60 * 1000, // 15 minutes
       });
     }
@@ -35,7 +34,6 @@ export const authController = {
       res.clearCookie("access_token", {
         httpOnly: true,
         secure: env.COOKIE_SECURE,
-        domain: env.COOKIE_DOMAIN,
       });
     }
 
