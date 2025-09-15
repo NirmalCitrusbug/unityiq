@@ -129,7 +129,7 @@ export default function ClockPage() {
           <Button
             type="primary"
             onClick={handleOpenModal}
-            disabled={!isWithinRange || attendanceStatus.isClockIn}
+            disabled={attendanceStatus.isClockIn}
             loading={loading}
             icon={<CameraOutlined />}
           >
