@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { attendanceService } from "@/api/services/attendance.service";
 import { asyncHandler, sendResponse } from "@/utils";
 import { HTTP_STATUS_CODE } from "@/utils/constant";
+import { env } from "@/config";
 
 declare global {
   namespace Express {
@@ -169,9 +170,7 @@ export const reportController = {
             time: record.clockIn.time,
             location: record.clockIn.location,
             image: record.clockIn.image
-              ? `${req.protocol}://${req.get("host")}/api/attendance/image/${
-                  record._id
-                }`
+              ? `${env.BASE_URL}/api/attendance/image/${record._id}`
               : null,
           },
           clockOut: record.clockOut

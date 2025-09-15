@@ -13,7 +13,10 @@ import { uploadSingleImage } from "@/utils/fileUpload";
 
 const router = Router();
 
-router.use(authGuard); // Protect all attendance routes
+// Image serving route
+router.get("/image/:id", attendanceController.getAttendanceImage);
+
+router.use(authGuard);
 
 // Use multer middleware for file upload
 router.post(
@@ -37,8 +40,5 @@ router.get("/status", attendanceController.getStatus);
 
 // Report routes
 router.get("/report", reportController.generateAttendanceReport);
-
-// Image serving route
-router.get("/image/:id", attendanceController.getAttendanceImage);
 
 export default router;

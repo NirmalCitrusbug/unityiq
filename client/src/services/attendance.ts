@@ -1,5 +1,5 @@
-import {api} from "./api";
-import {AttendanceStatus} from "@/types/attendance";
+import { api } from "./api";
+import { AttendanceStatus } from "@/types/attendance";
 
 export const attendanceService = {
   clockIn: async ({
@@ -14,14 +14,15 @@ export const attendanceService = {
     image: File;
   }) => {
     const formData = new FormData();
-    formData.append('storeId', storeId);
-    formData.append('latitude', latitude.toString());
-    formData.append('longitude', longitude.toString());
-    formData.append('image', image);
+    formData.append("storeId", storeId);
+    formData.append("latitude", latitude.toString());
+    formData.append("longitude", longitude.toString());
+    formData.append("image", image);
 
     const response = await api.post("/attendance/clock-in", formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
+        "ngrok-skip-browser-warning": "8000",
       },
     });
     return response.data;
@@ -46,7 +47,7 @@ export const attendanceService = {
 
   getAttendanceStatus: async (
     userId: string
-  ): Promise<{data: AttendanceStatus}> => {
+  ): Promise<{ data: AttendanceStatus }> => {
     const response = await api.get(`/attendance/status`);
     return response.data;
   },

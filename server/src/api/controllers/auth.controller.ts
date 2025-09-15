@@ -34,6 +34,7 @@ export const authController = {
       res.clearCookie("access_token", {
         httpOnly: true,
         secure: env.COOKIE_SECURE,
+        domain: env.COOKIE_DOMAIN,
       });
     }
 
