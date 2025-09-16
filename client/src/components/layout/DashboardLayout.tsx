@@ -1,25 +1,29 @@
 "use client";
 
-import React, {Suspense} from "react";
-import {Layout, Menu, Button, Space, Typography} from "antd";
-import {useAuth} from "@/context";
+import React, { Suspense, useState, useEffect } from "react";
+import { Layout, Menu, Button, Space, Typography, Grid } from "antd";
+import { useAuth } from "@/context";
 import {
   TeamOutlined,
   ClockCircleOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
-import {LoadingSpinner} from "@/components/common/LoadingSpinner";
+import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import Link from "next/link";
+const { useBreakpoint } = Grid;
 
-const {Header, Sider, Content} = Layout;
-const {Text} = Typography;
+const { Header, Sider, Content } = Layout;
+const { Text } = Typography;
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const {user, logout, checkPermission} = useAuth();
+  const { user, logout, checkPermission } = useAuth();
+  const [collapsed, setCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const screens = useBreakpoint();
 
   const menuItems = [
     ...(checkPermission("users", "read")
@@ -47,23 +51,37 @@ export default function DashboardLayout({
       : []),
   ];
 
+  // Auto-collapse on large screens
+  useEffect(() => {
+    setCollapsed(!screens.lg);
+    setIsMobile(!screens.lg);
+  }, [screens.lg]);
+
   return (
-    <Layout style={{minHeight: "100vh"}}>
-      <Sider breakpoint="lg" collapsedWidth="0">
-        <div style={{padding: "16px", textAlign: "center"}}>
-          <Text strong style={{color: "white"}}>
+    <Layout style={{ minHeight: "100vh" }}>
+      <Sider
+        breakpoint="lg"
+        collapsedWidth="0"
+        collapsible
+        collapsed={collapsed}
+        onCollapse={setCollapsed}
+        // trigger={null}
+      >
+        <div style={{ padding: "16px", textAlign: "center" }}>
+          <Text strong style={{ color: "white" }}>
             UnityIQ
           </Text>
         </div>
         <Menu
           theme="dark"
-          mode="inline"
+          mode="vertical"
           defaultSelectedKeys={["dashboard"]}
           items={menuItems}
+          onSelect={() => isMobile && setCollapsed(!collapsed)}
         />
       </Sider>
       <Layout>
-        <Header style={{padding: "0 16px", background: "#fff"}}>
+        <Header style={{ padding: "0 16px", background: "#fff" }}>
           <div
             style={{
               display: "flex",
@@ -87,7 +105,9 @@ export default function DashboardLayout({
             </Space>
           </div>
         </Header>
-        <Content style={{margin: "24px 16px", padding: 24, background: "#fff"}}>
+        <Content
+          style={{ margin: "24px 16px", padding: 24, background: "#fff" }}
+        >
           <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
         </Content>
       </Layout>

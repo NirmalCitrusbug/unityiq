@@ -1,14 +1,14 @@
 import { Location } from "@/types/attendance";
-import { getDistance } from 'geolib';
+import { getDistance } from "geolib";
 
 export const calculateDistance = (
   point1: Location,
   point2: Location
 ): number => {
   return getDistance(
-    { latitude: point1.latitude, longitude: point1.longitude },
-    { latitude: point2.latitude, longitude: point2.longitude }
-  ); // Returns distance in meters
+    { lat: point1.latitude, lng: point1.longitude },
+    { lat: point2.latitude, lng: point2.longitude }
+  );
 };
 
 export const getCurrentLocation = (): Promise<Location> => {
@@ -19,14 +19,14 @@ export const getCurrentLocation = (): Promise<Location> => {
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
+        console.log("Accuracy in meters:", position);
         resolve({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         });
       },
-      (error) => {
-        reject(error);
-      }
+      (error) => reject(error),
+      { enableHighAccuracy: true }
     );
   });
 };

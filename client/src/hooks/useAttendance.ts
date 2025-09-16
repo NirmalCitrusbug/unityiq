@@ -25,8 +25,6 @@ export const useAttendance = (userId: string) => {
   const [storeLoading, setStoreLoading] = useState(true);
   const [storeError, setStoreError] = useState<string | null>(null);
 
-  console.log("user", user);
-
   const checkLocation = useCallback(async () => {
     try {
       const location = await getCurrentLocation();
