@@ -121,15 +121,6 @@ export default function ClockPage() {
           lastClockOutTime={attendanceStatus.currentAttendance?.clockOut?.time}
         />
 
-        {!isWithinRange && currentStore && (
-          <Alert
-            message="Out of Range"
-            description="You must be within the store's range to clock in or out."
-            type="warning"
-            showIcon
-          />
-        )}
-
         <Space size="middle">
           <Button
             type="primary"
