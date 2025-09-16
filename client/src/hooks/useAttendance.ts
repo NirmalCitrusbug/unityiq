@@ -32,7 +32,7 @@ export const useAttendance = (userId: string) => {
 
   const checkLocation = useCallback(async () => {
     try {
-      const location = await watchLocation();
+      const location = await getCurrentLocation();
       setCurrentLocation(location);
       console.log("locations", location);
       if (location && currentStore) {

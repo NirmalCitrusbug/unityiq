@@ -35,12 +35,10 @@ export const getCurrentLocation = (): Promise<Location> => {
 
 export const watchLocation = async (): Promise<Location> => {
   return new Promise((resolve, reject) => {
-    const watchId = navigator.geolocation.watchPosition(
+    navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
         console.log("Watching location:", { latitude, longitude });
-
-        navigator.geolocation.clearWatch(watchId); // stop after first result
         resolve({ latitude, longitude });
       },
       (error) => {
