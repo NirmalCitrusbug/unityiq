@@ -1,13 +1,18 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { getCurrentLocation, calculateDistance } from "@/utils/location";
+import {
+  getCurrentLocation,
+  calculateDistance,
+  watchLocation,
+} from "@/utils/location";
 import { attendanceService } from "@/services/attendance";
 import { storeService } from "@/services/stores";
 import { Location, AttendanceStatus } from "@/types/attendance";
 import { Store } from "@/types/store";
 import { message } from "antd";
 import { useAuth } from "@/context";
+import { getLatitude, getLongitude } from "geolib";
 
 export const useAttendance = (userId: string) => {
   const { user } = useAuth(); // Auth context still needed for the provider
@@ -26,9 +31,8 @@ export const useAttendance = (userId: string) => {
   const [storeError, setStoreError] = useState<string | null>(null);
 
   const checkLocation = useCallback(async () => {
-    setLoading(true);
     try {
-      const location = await getCurrentLocation();
+      const location = await watchLocation();
       setCurrentLocation(location);
 
       if (location && currentStore) {
@@ -46,8 +50,6 @@ export const useAttendance = (userId: string) => {
       );
       console.error("Location error:", error);
       return false;
-    } finally {
-      setLoading(false);
     }
   }, [currentStore]);
 
@@ -150,19 +152,20 @@ export const useAttendance = (userId: string) => {
     fetchStoreData();
   }, [userId]);
 
-  // Check location when store data is loaded
-  useEffect(() => {
-    if (currentStore) {
-      checkLocation();
-    }
-  }, [currentStore]);
+  // useEffect(() => {
+  //   if (currentStore) {
+  //     const interval = setInterval(() => checkLocation(), 500);
+  //     return () => clearInterval(interval);
+  //   }
+  // }, [currentStore, checkLocation]);
 
-  // Update attendance status when store data is loaded
+  useEffect(() => {}, []);
+
   useEffect(() => {
     if (currentStore) {
       updateAttendanceStatus();
     }
-  }, [currentStore]);
+  }, [currentStore, updateAttendanceStatus]);
 
   return {
     currentLocation,

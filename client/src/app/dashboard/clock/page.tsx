@@ -10,6 +10,7 @@ import {
   LocationInfo,
   CameraModal,
 } from "@/components/attendance";
+import { Store } from "@/types";
 
 const { Title } = Typography;
 
@@ -24,6 +25,7 @@ export default function ClockPage() {
     handleClockOut,
     distanceFromStore,
     loading,
+    checkLocation,
   } = useAttendance(user?.id || "");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -73,7 +75,8 @@ export default function ClockPage() {
     return <div>Loading...</div>;
   }
 
-  const handleOpenModal = () => {
+  const handleOpenModal = async () => {
+    await checkLocation();
     setIsModalOpen(true);
   };
 
@@ -107,13 +110,6 @@ export default function ClockPage() {
           isClockIn={attendanceStatus.isClockIn}
           lastClockInTime={attendanceStatus.currentAttendance?.clockIn?.time}
           lastClockOutTime={attendanceStatus.currentAttendance?.clockOut?.time}
-        />
-
-        <LocationInfo
-          isWithinRange={isWithinRange}
-          currentLocation={currentLocation}
-          distanceFromStore={distanceFromStore}
-          currentStore={currentStore}
         />
 
         {!isWithinRange && currentStore && (
@@ -152,6 +148,10 @@ export default function ClockPage() {
           onCapture={handleCapture}
           hasCamera={hasCamera}
           cameraPermission={cameraPermission}
+          currentLocation={currentLocation}
+          distanceFromStore={distanceFromStore}
+          isWithinRange={isWithinRange}
+          currentStore={currentStore}
         />
 
         {hasCamera === false && (

@@ -2,6 +2,9 @@ import React, { useRef, useState, useEffect } from "react";
 import { Modal, Button, Space } from "antd";
 import { CameraOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import Webcam from "react-webcam";
+import LocationInfo from "./LocationInfo";
+import { Store } from "@/types";
+import { Location } from "@/types/attendance";
 
 interface CameraModalProps {
   isOpen: boolean;
@@ -9,6 +12,14 @@ interface CameraModalProps {
   onCapture: (imageSrc: string) => void;
   hasCamera: boolean | null;
   cameraPermission: string | null;
+  isWithinRange: boolean;
+  currentLocation: Location | null;
+  distanceFromStore: number | null;
+  currentStore: {
+    location: {
+      coordinates: [number, number];
+    };
+  } | null;
 }
 
 export const CameraModal: React.FC<CameraModalProps> = ({
@@ -17,6 +28,10 @@ export const CameraModal: React.FC<CameraModalProps> = ({
   onCapture,
   hasCamera,
   cameraPermission,
+  isWithinRange,
+  currentLocation,
+  distanceFromStore,
+  currentStore,
 }) => {
   const webcamRef = useRef<Webcam>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
@@ -58,6 +73,12 @@ export const CameraModal: React.FC<CameraModalProps> = ({
           </div>
         ) : (
           <>
+            <LocationInfo
+              isWithinRange={isWithinRange}
+              currentLocation={currentLocation}
+              distanceFromStore={distanceFromStore}
+              currentStore={currentStore}
+            />
             {!capturedImage ? (
               <div style={{ marginBottom: 16 }}>
                 {isOpen && !capturedImage && (

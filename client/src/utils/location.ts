@@ -19,17 +19,33 @@ export const getCurrentLocation = (): Promise<Location> => {
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        console.log("Accuracy in meters:", position);
-        resolve({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        });
+        const { latitude, longitude } = position.coords;
+
+        console.log("Got location:", { latitude, longitude });
+
+        resolve({ latitude, longitude });
       },
       (error) => {
-        console.log("Location error:", error);
+        console.error("Location error:", error);
         reject(error);
+      }
+    );
+  });
+};
+
+export const watchLocation = async (): Promise<Location> => {
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.watchPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+
+        console.log("Watching location:", { latitude, longitude });
+
+        resolve({ latitude, longitude });
       },
-      { enableHighAccuracy: true }
+      (error) => {
+        console.error("Location error:", error);
+      }
     );
   });
 };
