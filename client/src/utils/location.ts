@@ -25,7 +25,10 @@ export const getCurrentLocation = (): Promise<Location> => {
           longitude: position.coords.longitude,
         });
       },
-      (error) => reject(error),
+      (error) => {
+        console.log("Location error:", error);
+        reject(error);
+      },
       { enableHighAccuracy: true }
     );
   });

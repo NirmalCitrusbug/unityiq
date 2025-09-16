@@ -26,6 +26,7 @@ export const useAttendance = (userId: string) => {
   const [storeError, setStoreError] = useState<string | null>(null);
 
   const checkLocation = useCallback(async () => {
+    setLoading(true);
     try {
       const location = await getCurrentLocation();
       setCurrentLocation(location);
@@ -38,9 +39,15 @@ export const useAttendance = (userId: string) => {
         setDistanceFromStore(distance);
         setIsWithinRange(distance <= currentStore.geofenceRadius);
       }
+      return true;
     } catch (error) {
-      message.error("Failed to get location. Please enable location services.");
+      message.error(
+        "Failed to get location. Please enable location services and try again."
+      );
       console.error("Location error:", error);
+      return false;
+    } finally {
+      setLoading(false);
     }
   }, [currentStore]);
 
@@ -120,7 +127,6 @@ export const useAttendance = (userId: string) => {
     if (!userId) return;
     const fetchStoreData = async () => {
       if (!userId) return;
-      console.log("Fetching store data for user:", userId);
       setStoreLoading(true);
       setStoreError(null);
 
@@ -148,22 +154,15 @@ export const useAttendance = (userId: string) => {
   useEffect(() => {
     if (currentStore) {
       checkLocation();
-
-      // Check location every 300ms
-      const locationInterval = setInterval(checkLocation, 300);
-
-      return () => {
-        clearInterval(locationInterval);
-      };
     }
-  }, [checkLocation, currentStore]);
+  }, [currentStore]);
 
   // Update attendance status when store data is loaded
   useEffect(() => {
     if (currentStore) {
       updateAttendanceStatus();
     }
-  }, [currentStore, updateAttendanceStatus]);
+  }, [currentStore]);
 
   return {
     currentLocation,
