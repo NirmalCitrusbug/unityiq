@@ -34,7 +34,7 @@ export const useAttendance = (userId: string) => {
     try {
       const location = await watchLocation();
       setCurrentLocation(location);
-
+      console.log("locations", location);
       if (location && currentStore) {
         const distance = calculateDistance(location, {
           latitude: currentStore.location.coordinates[1],
@@ -158,8 +158,6 @@ export const useAttendance = (userId: string) => {
   //     return () => clearInterval(interval);
   //   }
   // }, [currentStore, checkLocation]);
-
-  useEffect(() => {}, []);
 
   useEffect(() => {
     if (currentStore) {

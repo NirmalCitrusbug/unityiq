@@ -30,6 +30,7 @@ export default function ClockPage() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hasCamera, setHasCamera] = useState<boolean | null>(null);
+  const [isOpening, setIsOpening] = useState(false);
   const [cameraPermission, setCameraPermission] =
     useState<PermissionState | null>(null);
 
@@ -76,12 +77,20 @@ export default function ClockPage() {
   }
 
   const handleOpenModal = async () => {
-    await checkLocation();
-    setIsModalOpen(true);
+    try {
+      setIsOpening(true);
+      const locationCheck = await checkLocation();
+      console.log("Location check:", locationCheck);
+      setIsModalOpen((prev) => !prev);
+      setIsOpening(false);
+    } catch (error) {
+      setIsOpening(false);
+      console.error("Error checking location:", error);
+    }
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
+    setIsModalOpen((prev) => !prev);
   };
 
   const handleCapture = async (imageSrc: string) => {
@@ -126,7 +135,7 @@ export default function ClockPage() {
             type="primary"
             onClick={handleOpenModal}
             disabled={attendanceStatus.isClockIn}
-            loading={loading}
+            loading={loading || isOpening}
             icon={<CameraOutlined />}
           >
             Clock In
@@ -152,6 +161,7 @@ export default function ClockPage() {
           distanceFromStore={distanceFromStore}
           isWithinRange={isWithinRange}
           currentStore={currentStore}
+          checkLocation={checkLocation}
         />
 
         {hasCamera === false && (

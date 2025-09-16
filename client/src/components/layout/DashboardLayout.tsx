@@ -51,6 +51,14 @@ export default function DashboardLayout({
       : []),
   ];
 
+  function useHasMounted() {
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
+    return mounted;
+  }
+
+  const hasMounted = useHasMounted();
+
   // Auto-collapse on large screens
   useEffect(() => {
     setCollapsed(!screens.lg);
@@ -58,59 +66,62 @@ export default function DashboardLayout({
   }, [screens.lg]);
 
   return (
-    <Layout style={{ minHeight: "100vh" }}>
-      <Sider
-        breakpoint="lg"
-        collapsedWidth="0"
-        collapsible
-        collapsed={collapsed}
-        onCollapse={setCollapsed}
-        // trigger={null}
-      >
-        <div style={{ padding: "16px", textAlign: "center" }}>
-          <Text strong style={{ color: "white" }}>
-            UnityIQ
-          </Text>
-        </div>
-        <Menu
-          theme="dark"
-          mode="vertical"
-          defaultSelectedKeys={["dashboard"]}
-          items={menuItems}
-          onSelect={() => isMobile && setCollapsed(!collapsed)}
-        />
-      </Sider>
-      <Layout>
-        <Header style={{ padding: "0 16px", background: "#fff" }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-              height: "100%",
-            }}
-          >
-            <Space>
-              <span>
-                {user?.firstName} {user?.lastName} ({user?.role.name})
-              </span>
-              <Button
-                icon={<LogoutOutlined />}
-                onClick={logout}
-                type="text"
-                danger
-              >
-                Logout
-              </Button>
-            </Space>
-          </div>
-        </Header>
-        <Content
-          style={{ margin: "24px 16px", padding: 24, background: "#fff" }}
+    hasMounted && (
+      <Layout style={{ minHeight: "100vh" }}>
+        <Sider
+          breakpoint="lg"
+          collapsedWidth="0"
+          collapsible
+          collapsed={collapsed}
+          onCollapse={setCollapsed}
+          // trigger={null}
         >
-          <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
-        </Content>
+          <div style={{ padding: "16px", textAlign: "center" }}>
+            <Text strong style={{ color: "white" }}>
+              UnityIQ
+            </Text>
+          </div>
+
+          <Menu
+            theme="dark"
+            mode="vertical"
+            defaultSelectedKeys={["dashboard"]}
+            items={menuItems}
+            onSelect={() => isMobile && setCollapsed(!collapsed)}
+          />
+        </Sider>
+        <Layout>
+          <Header style={{ padding: "0 16px", background: "#fff" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+                height: "100%",
+              }}
+            >
+              <Space>
+                <span>
+                  {user?.firstName} {user?.lastName} ({user?.role.name})
+                </span>
+                <Button
+                  icon={<LogoutOutlined />}
+                  onClick={logout}
+                  type="text"
+                  danger
+                >
+                  Logout
+                </Button>
+              </Space>
+            </div>
+          </Header>
+          <Content
+            style={{ margin: "24px 16px", padding: 24, background: "#fff" }}
+          >
+            <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
+          </Content>
+        </Layout>
       </Layout>
-    </Layout>
+    )
   );
 }

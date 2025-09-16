@@ -20,6 +20,7 @@ interface CameraModalProps {
       coordinates: [number, number];
     };
   } | null;
+  checkLocation: () => Promise<boolean>;
 }
 
 export const CameraModal: React.FC<CameraModalProps> = ({
@@ -32,6 +33,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({
   currentLocation,
   distanceFromStore,
   currentStore,
+  checkLocation,
 }) => {
   const webcamRef = useRef<Webcam>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
@@ -53,6 +55,21 @@ export const CameraModal: React.FC<CameraModalProps> = ({
       onClose();
     }
   };
+
+  useEffect(() => {
+    let watchId: number;
+
+    if (isOpen) {
+      watchId = navigator.geolocation.watchPosition(
+        (pos) => console.log("Modal tracking:", pos.coords),
+        (err) => console.error("Location error:", err)
+      );
+    }
+
+    return () => {
+      if (watchId) navigator.geolocation.clearWatch(watchId);
+    };
+  }, [isOpen]);
 
   return (
     <Modal
