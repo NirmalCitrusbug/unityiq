@@ -149,8 +149,8 @@ export const useAttendance = (userId: string) => {
     if (currentStore) {
       checkLocation();
 
-      // Check location every minute
-      const locationInterval = setInterval(checkLocation, 60000);
+      // Check location every 300ms
+      const locationInterval = setInterval(checkLocation, 300);
 
       return () => {
         clearInterval(locationInterval);
