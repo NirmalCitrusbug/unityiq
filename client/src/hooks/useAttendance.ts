@@ -124,6 +124,18 @@ export const useAttendance = (userId: string) => {
     }
   };
 
+  const handleClockoutLocation = async () => {
+    setLoading(true);
+    try {
+      await checkLocation();
+      await handleClockOut();
+    } catch (error) {
+      console.error("Error clocking out:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Fetch store data when user changes
   useEffect(() => {
     if (!userId) return;
@@ -176,5 +188,6 @@ export const useAttendance = (userId: string) => {
     checkLocation,
     handleClockIn,
     handleClockOut,
+    handleClockoutLocation,
   };
 };

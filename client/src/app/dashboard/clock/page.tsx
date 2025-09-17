@@ -26,6 +26,7 @@ export default function ClockPage() {
     distanceFromStore,
     loading,
     checkLocation,
+    handleClockoutLocation,
   } = useAttendance(user?.id || "");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -134,7 +135,7 @@ export default function ClockPage() {
           <Button
             type="primary"
             danger
-            onClick={handleClockOut}
+            onClick={handleClockoutLocation}
             disabled={!attendanceStatus.isClockIn}
             loading={loading}
           >
