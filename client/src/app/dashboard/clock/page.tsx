@@ -38,6 +38,44 @@ export default function ClockPage() {
     useState<PermissionState | null>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
 
+  useEffect(() => {
+    const checkCameraAvailability = async () => {
+      if (!navigator.mediaDevices?.enumerateDevices) {
+        setHasCamera(false);
+        return;
+      }
+
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(
+          (device) => device.kind === "videoinput"
+        );
+        setHasCamera(videoDevices.length > 0);
+      } catch (error) {
+        console.error("Error checking camera devices:", error);
+        setHasCamera(false);
+      }
+    };
+
+    const checkPermission = async () => {
+      try {
+        const permissionStatus = await navigator.permissions.query({
+          name: "camera" as PermissionName,
+        });
+        setCameraPermission(permissionStatus.state);
+
+        permissionStatus.onchange = () => {
+          setCameraPermission(permissionStatus.state);
+        };
+      } catch (error) {
+        console.error("Error checking camera permission:", error);
+      }
+    };
+
+    checkCameraAvailability();
+    checkPermission();
+  }, []);
+
   if (!user) {
     return <div>Loading...</div>;
   }
@@ -78,44 +116,6 @@ export default function ClockPage() {
     const imageFile = dataURLtoFile(imageSrc, "clockin-photo.jpg");
     await handleClockIn(imageFile);
   };
-
-  useEffect(() => {
-    const checkCameraAvailability = async () => {
-      if (!navigator.mediaDevices?.enumerateDevices) {
-        setHasCamera(false);
-        return;
-      }
-
-      try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const videoDevices = devices.filter(
-          (device) => device.kind === "videoinput"
-        );
-        setHasCamera(videoDevices.length > 0);
-      } catch (error) {
-        console.error("Error checking camera devices:", error);
-        setHasCamera(false);
-      }
-    };
-
-    const checkPermission = async () => {
-      try {
-        const permissionStatus = await navigator.permissions.query({
-          name: "camera" as PermissionName,
-        });
-        setCameraPermission(permissionStatus.state);
-
-        permissionStatus.onchange = () => {
-          setCameraPermission(permissionStatus.state);
-        };
-      } catch (error) {
-        console.error("Error checking camera permission:", error);
-      }
-    };
-
-    checkCameraAvailability();
-    checkPermission();
-  }, []);
 
   return (
     <div>
