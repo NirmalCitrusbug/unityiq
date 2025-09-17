@@ -21,6 +21,9 @@ interface CameraModalProps {
     };
   } | null;
   checkLocation: () => Promise<boolean>;
+  webcamRef: React.RefObject<Webcam | null>;
+  setCapturedImage: React.Dispatch<React.SetStateAction<string | null>>;
+  capturedImage: string | null;
 }
 
 export const CameraModal: React.FC<CameraModalProps> = ({
@@ -34,10 +37,10 @@ export const CameraModal: React.FC<CameraModalProps> = ({
   distanceFromStore,
   currentStore,
   checkLocation,
+  webcamRef,
+  setCapturedImage,
+  capturedImage,
 }) => {
-  const webcamRef = useRef<Webcam>(null);
-  const [capturedImage, setCapturedImage] = useState<string | null>(null);
-
   const capturePhoto = () => {
     const imageSrc = webcamRef.current?.getScreenshot();
     if (imageSrc) {

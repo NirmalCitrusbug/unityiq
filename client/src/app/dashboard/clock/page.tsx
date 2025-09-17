@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button, Typography, Space, Alert } from "antd";
 import { CameraOutlined } from "@ant-design/icons";
 import { useAuth } from "@/context/AuthContext";
@@ -11,6 +11,7 @@ import {
   CameraModal,
 } from "@/components/attendance";
 import { Store } from "@/types";
+import Webcam from "react-webcam";
 
 const { Title } = Typography;
 
@@ -29,11 +30,54 @@ export default function ClockPage() {
     handleClockoutLocation,
   } = useAttendance(user?.id || "");
 
+  const webcamRef = useRef<Webcam>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hasCamera, setHasCamera] = useState<boolean | null>(null);
   const [isOpening, setIsOpening] = useState(false);
   const [cameraPermission, setCameraPermission] =
     useState<PermissionState | null>(null);
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+
+  const handleOpenModal = async () => {
+    try {
+      setIsOpening(true);
+      const locationCheck = await checkLocation();
+      console.log("Location check:", locationCheck);
+      setIsModalOpen((prev) => !prev);
+      setIsOpening(false);
+    } catch (error) {
+      setIsOpening(false);
+      console.error("Error checking location:", error);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen((prev) => !prev);
+    webcamRef.current = null;
+    setCapturedImage(null);
+  };
+
+  const handleCapture = async (imageSrc: string) => {
+    const dataURLtoFile = (dataurl: string, filename: string) => {
+      const arr = dataurl.split(",");
+      const mime = arr[0].match(/:(.*?);/)?.[1];
+      const bstr = atob(arr[1]);
+      const u8arr = new Uint8Array(bstr.length);
+
+      for (let i = 0; i < bstr.length; i++) {
+        u8arr[i] = bstr.charCodeAt(i);
+      }
+
+      return new File([u8arr], filename, { type: mime });
+    };
+
+    const imageFile = dataURLtoFile(imageSrc, "clockin-photo.jpg");
+    await handleClockIn(imageFile);
+  };
 
   useEffect(() => {
     const checkCameraAvailability = async () => {
@@ -72,45 +116,6 @@ export default function ClockPage() {
     checkCameraAvailability();
     checkPermission();
   }, []);
-
-  if (!user) {
-    return <div>Loading...</div>;
-  }
-
-  const handleOpenModal = async () => {
-    try {
-      setIsOpening(true);
-      const locationCheck = await checkLocation();
-      console.log("Location check:", locationCheck);
-      setIsModalOpen((prev) => !prev);
-      setIsOpening(false);
-    } catch (error) {
-      setIsOpening(false);
-      console.error("Error checking location:", error);
-    }
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen((prev) => !prev);
-  };
-
-  const handleCapture = async (imageSrc: string) => {
-    const dataURLtoFile = (dataurl: string, filename: string) => {
-      const arr = dataurl.split(",");
-      const mime = arr[0].match(/:(.*?);/)?.[1];
-      const bstr = atob(arr[1]);
-      const u8arr = new Uint8Array(bstr.length);
-
-      for (let i = 0; i < bstr.length; i++) {
-        u8arr[i] = bstr.charCodeAt(i);
-      }
-
-      return new File([u8arr], filename, { type: mime });
-    };
-
-    const imageFile = dataURLtoFile(imageSrc, "clockin-photo.jpg");
-    await handleClockIn(imageFile);
-  };
 
   return (
     <div>
@@ -154,6 +159,9 @@ export default function ClockPage() {
           isWithinRange={isWithinRange}
           currentStore={currentStore}
           checkLocation={checkLocation}
+          webcamRef={webcamRef}
+          setCapturedImage={setCapturedImage}
+          capturedImage={capturedImage}
         />
 
         {hasCamera === false && (
